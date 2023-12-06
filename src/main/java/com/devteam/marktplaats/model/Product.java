@@ -1,9 +1,15 @@
 package com.devteam.marktplaats.model;
 
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -12,14 +18,21 @@ public class Product {
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	public long id;
-	public String productType;
-	public String productName;
-	public String productDescription;
-	public double price;
-	public double weight;
-	public String size;
+	private long id;
+	private String productType;
+	private String productName;
+	private String productDescription;
+	private double price;
+	private double weight;
+	private String size;
+	private String foto;
 	
+	@ManyToOne
+	@JoinColumn(name = "user_id")
+	private User user;
+	
+	@OneToMany(mappedBy="product", cascade = CascadeType.ALL)
+	private List<Item> item;
 	
 	public long getId() {
 		return id;
@@ -66,5 +79,23 @@ public class Product {
 	public void setSize(String size) {
 		this.size = size;
 	}
+	public String getFoto() {
+		return foto;
+	}
+	public void setFoto(String foto) {
+		this.foto = foto;
+	}
+	public User getUser() {
+		return user;
+	}
+	public void setUser(User user) {
+		this.user = user;
+	}
+	public List<Item> getItem() {
+		return item;
+	}
+	public void setItem(List<Item> item) {
+		this.item = item;
+	}	
 	
 }

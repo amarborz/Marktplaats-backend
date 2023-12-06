@@ -2,11 +2,14 @@ package com.devteam.marktplaats.api;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.devteam.marktplaats.dto.OrderDTO;
+import com.devteam.marktplaats.dto.ProductDTO;
 import com.devteam.marktplaats.model.Order;
 import com.devteam.marktplaats.service.OrderService;
 
@@ -18,23 +21,34 @@ public class OrderController {
     private OrderService orderService;
 
     @GetMapping
-    public List<Order> findAllOrders() {
-        return orderService.getAllOrders();
+    public List<OrderDTO> findAllOrders() {
+        return orderService.getAllOrders()
+        		.stream()
+				.map(OrderDTO::new)
+				.collect(Collectors.toList());
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<Order> findById(@PathVariable long id) {
-        Optional<Order> optionalOrder = orderService.findById(id);
-        if (optionalOrder.isPresent()) {
-            return ResponseEntity.ok(optionalOrder.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<OrderDTO> findById(@PathVariable long id) {
+    	return orderService.findById(id)
+				.map(OrderDTO::new)
+				.map(ResponseEntity::ok)
+				.orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
-    public Order create(@RequestBody Order order) {
-        return this.orderService.createOrUpdate(order);
+    @GetMapping("by_user/{user_id}")
+    public ResponseEntity<List<OrderDTO>> findByUser(@PathVariable long user_id) {
+    	List<OrderDTO> orderDTOList = orderService.findByUser(user_id)
+    			.stream()
+				.map(OrderDTO::new)
+				.collect(Collectors.toList());
+    	 return ResponseEntity.ok(orderDTOList);
+    }
+    
+    
+    @PostMapping("user/{user_id}")
+    public Order create(@PathVariable long user_id, @RequestBody Order order) {
+    	return this.orderService.create(order, user_id);
     }
 
     @DeleteMapping("{id}")
@@ -58,7 +72,7 @@ public class OrderController {
         target.setPaymentMethod(input.getPaymentMethod());
         target.setStatus(input.getStatus());
 
-        Order updated = this.orderService.createOrUpdate(target);
+        Order updated = this.orderService.update(target);
         return ResponseEntity.ok(updated);
     }
 }
