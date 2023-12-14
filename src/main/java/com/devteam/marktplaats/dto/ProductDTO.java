@@ -1,9 +1,11 @@
 package com.devteam.marktplaats.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.devteam.marktplaats.model.Foto;
 import com.devteam.marktplaats.model.Product;
+import com.devteam.marktplaats.model.ProductDetails;
 
 public class ProductDTO {
 
@@ -14,7 +16,9 @@ public class ProductDTO {
     private double price;
     private double weight;
     private String size;
-    private List<Foto> foto;
+    private List<String> foto;
+    private List<String> propertyName;
+    private List<String> propertyValue;
 
     public ProductDTO(Product product) {
     	this.id = product.getId();
@@ -24,7 +28,18 @@ public class ProductDTO {
         this.price = product.getPrice();
         this.weight = product.getWeight();
         this.size = product.getSize();
-        this.foto = product.getFoto();
+        this.foto = new ArrayList<>();
+        
+        for (Foto foto : product.getFoto()) {
+        	this.foto.add(foto.getUrl());
+        }
+        
+        this.propertyName = new ArrayList<>();
+        this.propertyValue = new ArrayList<>();
+        for (ProductDetails productDetails : product.getProductDetails()) {
+        	this.propertyName.add(productDetails.getPropertyName());
+        	this.propertyValue.add(productDetails.getPropertyValue());
+        }
     }
 
     public long getId() {
@@ -55,11 +70,16 @@ public class ProductDTO {
 		return size;
 	}
 
-	public List<Foto> getFoto() {
+	public List<String> getFoto() {
 		return foto;
 	}
 
-	
-	
+	public List<String> getPropertyName() {
+		return propertyName;
+	}
+
+	public List<String> getPropertyValue() {
+		return propertyValue;
+	}
 	
 }
