@@ -29,6 +29,8 @@ jobs:
         with:
           name: java-app
           path: '${{ github.workspace }}/target/*.jar'
+        env:
+          CLOUDINARY_URL: ${{ secrets.CLOUDINARY_URL }}
 
   deploy:
     runs-on: ubuntu-latest
@@ -51,3 +53,5 @@ jobs:
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_94980FF00DBB4849B27763878495301F }}
           package: '*.jar'
+        env:
+          CLOUDINARY_URL: ${{ secrets.CLOUDINARY_URL }}
